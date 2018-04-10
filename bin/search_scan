@@ -1,0 +1,33 @@
+#!/usr/bin/env ruby
+
+require_relative '../lib/nwscan.rb'
+
+puts('## Subscan v1 ##')
+ScanTools.pkg_check
+
+puts('Please wait while the scan list is populated...')
+emu = NWScan.new
+#emu = NWScan.new(128, 129)  ## debug
+emu.scan
+emu.write_to_file
+
+loop do
+
+  puts('Please enter your search term: [hostname / subnet octet]')
+  scan_query = gets.strip
+  if scan_query.is_a?(Integer)
+    search_res = emu.search_by_subnet(scan_query)
+    search_res.each { |dvc| puts("+ #{dvc}") }
+    puts('No results found for your search') if search_res.empty?
+  elsif scan_query.is_a?(String)
+    search_res = emu.search_by_host(scan_query)
+    search_res.each { |dvc| puts("+ #{dvc}") }
+    puts('No results found for your search') if search_res.empty?
+  else
+    'Search query not recognised'
+  end
+  puts('Would you like to search again? [y/n]')
+  search_again = gets.strip
+  break if search_again =~ /[Nn]/
+
+end

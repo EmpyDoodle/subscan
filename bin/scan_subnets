@@ -1,0 +1,18 @@
+#!/usr/bin/env ruby
+
+require_relative '../lib/nwscan.rb'
+
+puts('## Subscan v1 ##')
+ScanTools.pkg_check
+
+cormorant = nil
+if ARGV.empty?
+  cormorant = NWScan.new
+else
+  puts "ARGS = #{ARGV.to_s}"
+  lo = ARGV[0].to_i
+  hi = ARGV[1].to_i
+  cormorant = NWScan.new(lo, hi)
+end
+cormorant.scan
+cormorant.write_to_file

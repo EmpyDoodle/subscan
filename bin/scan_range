@@ -1,0 +1,25 @@
+#!/usr/bin/env ruby
+
+require_relative '../lib/nwscan.rb'
+
+puts('## Subscan v1 ##')
+ScanTools.pkg_check
+
+pigeon = nil
+unless ARGV.empty?
+  puts "ARGS = #{ARGV.to_s}"
+  lo = ARGV[0].to_i
+  hi = ARGV[1].to_i
+  pigeon = NWScan.new(lo, hi)
+else
+  puts('Please specify the lower range value. [default=0]')
+  lo = gets.strip.to_i
+  puts('Please specify the upper range value. [default=254]')
+  hi = gets.strip.to_i
+  lo = lo || 0
+  hi = hi || 254
+  pigeon = NWScan.new(lo, hi)
+end
+
+pigeon.scan
+pigeon.write_to_file
