@@ -26,6 +26,17 @@ class NWScan
     return "Error: No devices are in scan list. Please run scan again" if @scans == {}
   end
 
+  def scan_slow()  ## Fallback option
+    puts("Scanning network @ #{@time.to_s}")
+    (@lo..@hi).to_a.each do |sn|
+      puts("Scanning subnet [192.168.#{sn.to_s}.x]")
+      @scans[sn] = ScanTools.scan_subnet(sn)
+      puts(@scans[sn])
+      puts('----------')
+    end
+    return "Error: No devices are in scan list. Please run scan again" if @scans == {}
+  end
+
   def search_by_host(hostname)
     return "Please run scan before searching!" if @scans == {}
     search_matches = Array.new
