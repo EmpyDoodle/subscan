@@ -15,15 +15,13 @@ class NWScan
     @id = @time.strftime("%d%m%Y-%H%M")
   end
 
-  def scan
+  def scan_all()
     puts("Scanning network @ #{@time.to_s}")
     (@lo..@hi).to_a.each do |sn|
-      puts("Scanning subnet [192.168.#{sn.to_s}.x]")
-      @scans[sn] = ScanTools.scan_subnet(sn)
-      puts(@scans[sn])
-      puts('----------')
+      @scans[sn] = ScanTools.scan(sn)
     end
     return "Error: No devices are in scan list. Please run scan again" if @scans == {}
+    return @scans.to_s
   end
 
   def scan_slow()  ## Fallback option

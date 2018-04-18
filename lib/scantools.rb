@@ -7,6 +7,21 @@ module ED
     return true if `dpkg -l`.each_line.select { |pkg| pkg.start_with?("ii  #{pkg}") }
     return false
   end
+
+  def self.do_in_child()
+    read, write = IO.pipe
+    pid = fork do
+      read.close
+      result = yield
+      Marshal.dump(result, write)
+      exit!(0) # skips exit handlers.
+    end
+    write.close
+    result = read.read
+    Process.wait(pid)
+    raise "child failed" if result.empty?
+    Marshal.load(result)
+  end
 end
 
 module ScanTools
@@ -26,6 +41,23 @@ module ScanTools
   def self.scan_subnet(netmask)
     ip_range = ['192', '168', netmask.to_s, '0/24'].join('.')
     return format_scan(`nbtscan #{ip_range}`)
+  end
+
+  def self.scan(subnet)
+    puts("Scanning subnet [192.168.#{subnet.to_s}.x]")
+    read, write = IO.pipe
+    result = nil
+    pid = fork do
+      read.close
+      result = ScanTools.scan_subnet(subnet)
+#      Marshal.dump(result, write)
+      exit!(0)
+    end
+    write.close
+#    result = read.read
+#    Process.wait(pid)
+#    return Marshal.load(result).first
+    Marshal.dump(result, write)
   end
 
 end
